@@ -10,10 +10,12 @@ Irradiance-RNN is a partially configurable Recurrent Neural Network (RNN) implem
 * The demonstrated model was trained with a years worth of 30 minute interval data from 2010 (Denton County, Texas).
 * The model was evaluated with 300 sequential data points (mostly for visual purposes) from various time frames in 2011 (Denton County, Texas).
 
-<center>RMSE ~0.07 for some days in January 2011</center>
+<p align="center">RMSE ~0.07 for some days in January 2011</p>
 
 ![Jan](images/denton_county_texas_jan.png)
-</br><center>RMSE ~0.19 for some days in September</center>
+
+<p align="center">RMSE ~0.19 for some days in September 2011<p align="center">
+
 ![Sep](images/denton_county_texas_sep.png)
 
 ## Documentation
