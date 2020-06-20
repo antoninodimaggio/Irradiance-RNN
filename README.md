@@ -50,7 +50,7 @@ python download.py --lat 33.2164 \
 ```
 ## Training
 * Everything from `--batch-size` through `--gamma` is set to the corresponding default values. They are specified for demonstration purposes in this case.
-* It is advised to change the `--name` after each run, otherwise a model with same name will be overwritten.
+* It is advised to change the `--name` after each run, otherwise a model with the same name will be overwritten.
 * Detailed information on each argument can be found [here](docs/DOCS.md)
 * You could also use `python train.py -h` for help
 ```
@@ -70,7 +70,7 @@ python train.py --train-data-path ./data/csv/33.2164_-97.1292_2010.csv \
 ```
 ## Evaluation and Plotting
 * Make sure that the arguments `--seq-length` through `--num-layers` are the same as what was used to train your model
-* It is advised to change the `--plot-name` after each run, otherwise a plot with same name will be overwritten.
+* It is advised to change the `--plot-name` after each run, otherwise a plot with the same name will be overwritten.
 * Detailed information on each argument can be found [here](docs/DOCS.md)
 * You could also use `python eval.py -h` for help
 ```
