@@ -8,4 +8,5 @@ __pycache__/
 
 # project
 *.csv
-src/process/config.json
+*.json
+!config.example.json
