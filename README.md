@@ -1,61 +1,89 @@
 # Irradiance-RNN
-Irradiance-RNN is a partially configurable Recurrent Neural Network (RNN) implementing Long-short term memory (LSTM) layers designed to forecast irradiance data.
-* My source of solar irradiance data comes from the [National Solar Radiation Database (NSRDB)](https://nsrdb.nrel.gov/) provided for free by the [National Renewable Energy Laboratory (NREL)](https://nrel.gov/). Check out the [NSRDB docs](https://nsrdb.nrel.gov/about/u-s-data.html) for a more detailed explanation.
-* The inspiration behind this project comes from  *Alzahrani et al.* who provided an initial RNN structure for me to get started [1].
-* I have modified *Alzahrani et al.* approach by adding dropout layers with a dropout rate of p=0.3 in order to prevent overfitting issues.
-* The code, in its current state, uses a years worth of data to train the model (might change this later).
-* May also make this more user friendly in the future.
+Irradiance-RNN is a partially configurable Recurrent Neural Network (RNN) implementing Long-Short Term Memory (LSTM) layers designed to forecast solar irradiance.
+<p>
+  <a href="https://github.com/antoninodimaggio/Irradiance-RNN/blob/master/LICENSE">
+      <img alt="license" src="https://img.shields.io/github/license/antoninodimaggio/Irradiance-RNN">
+  </a>
+  <a href="https://www.python.org/">
+       <img alt="python" src="https://img.shields.io/badge/python%20-3.6%2B-blue">
+   </a>
+</p>
+
+## Introduction
+The RNN is implemented using [PyTorch](https://pytorch.org/). The solar irradiance data comes from the [National Solar Radiation Database (NSRDB)](https://nsrdb.nrel.gov/).The code, in its current state, uses a year's worth of data to train the model.
 
 ## Results
-* The demonstrated model was trained with a years worth of 30 minute interval data from 2010 (Denton County, Texas).
-* The model was evaluated with 300 sequential data points (mostly for visual purposes) from various time frames in 2011 (Denton County, Texas).
+* The data used to train and evaluate the model is from Denton County, Texas.
+* The model was trained with a year's worth of 30 minute interval data from 2010.
+* The model was evaluated with 300 sequential data points (mostly for visual purposes) from various time frames in 2011.
 
-<p align="center">RMSE ~0.07 for some days in January 2011</p>
+<p align="center">RMSE: 0.07 for some days in January 2011</p>
 
-![Jan](images/denton_county_texas_jan.png)
+![Jan](docs/images/denton_county_texas_jan.png)
 
-<p align="center">RMSE ~0.19 for some days in September 2011<p align="center">
+<p align="center">RMSE: 0.19 for some days in September 2011</p>
 
-![Sep](images/denton_county_texas_sep.png)
+![Sep](docs/images/denton_county_texas_sep.png)
 
-## Documentation
-
-### Setup
-* Create a virtual environment with Python 3.6 installed and run the following commands <br>
-* NOTE: You need a cuda enabled device on your machine (sorry)
+## Setup
+**Required**
+* Python 3.6 +
+* CUDA 10.2 ([Instructions](https://pytorch.org/get-started/locally/) for installing PyTorch on 9.2 or 10.1)
+* Get an API key from [NREL](https://developer.nrel.gov/signup/)
+* Add your API access details to `Irradiance-RNN/config/config.example.json`
+* Remove `.example` from `Irradiance-RNN/config/config.example.json`
 ```
 git clone https://github.com/antoninodimaggio/Irradiance-RNN.git
 cd Irradiance-RNN
 pip install -r requirements.txt
 ```
-
-### Part 1: Downloading Data
-* First you need to get an api key from [NREL](https://developer.nrel.gov/signup/) (it's easy and free)
-* Add your api key and other information to the config.example.json located in Irradiance-RNN/src/process/config.example.json (remove example from the path)
+## Download Training and Testing Data
+* Download at least two years worth of irradiance data -- one year for training, one year for testing. This means you have to run `python download.py` at least twice.
+* Detailed information on each argument can be found [here](docs/DOCS.md)
+* You could also use `python download.py -h` for help
 ```
-cd src/process
+python download.py --lat 33.2164 \
+      --lon -97.1292 \
+      --year 2010 \
+      --leap-year false \
+      --interval 30
 ```
-* Open grab_data.py (preferably the whole project) in a text editor and change the variables to download the data that you want
-* These variables are denoted by <i> THINGS YOU CAN EDIT </i> you can not miss it
-* Repeat this process to get your training and testing data
+## Training
+* Everything from `--batch-size` through `--gamma` is set to the corresponding default values. They are specified for demonstration purposes in this case.
+* It is advised to change the `--name` after each run, otherwise a model with the same name will be overwritten.
+* Detailed information on each argument can be found [here](docs/DOCS.md)
+* You could also use `python train.py -h` for help
 ```
-python grab_data.py
+python train.py --train-data-path ./data/csv/33.2164_-97.1292_2010.csv \
+      --test-data-path ./data/csv/33.2164_-97.1292_2011.csv \
+      --name model \
+      --batch-size 64 \
+      --seq-length 64 \
+      --hidden-size 35 \
+      --num-layers 2 \
+      --dropout 0.3 \
+      --epochs 8 \
+      --lr 1e-2 \
+      --decay 1e-5 \
+      --step-size 2 \
+      --gamma 0.5
 ```
-
-### Part 2: Training and Testing
-* Navigate to Irradiance-RNN/src/nn
-* Change the variables in the run.py file to the desired values (default values are already set)
-* These variables are denoted by <i> THINGS YOU CAN EDIT </i> you can not miss it
-* There are comments in run.py that explain what each variable means
+## Evaluation and Plotting
+* Make sure that the arguments `--seq-length` through `--num-layers` are the same as what was used to train your model
+* It is advised to change the `--plot-name` after each run, otherwise a plot with the same name will be overwritten.
+* Detailed information on each argument can be found [here](docs/DOCS.md)
+* You could also use `python eval.py -h` for help
 ```
-python run.py
+python eval.py --test-data-path ./data/csv/33.2164_-97.1292_2011.csv \
+      --name model \
+      --seq-length 64 \
+      --hidden-size 35 \
+      --num-layers 2 \
+      --plot \
+      --s-split 0 \
+      --e-split 800 \
+      --plot-name test
 ```
-
-### Part 3: Look At Your Results
-* Go to the images folder to find your plots of predicted vs. actual irradiance!
-
 ## Attributions/Thanks
 * This project would not be possible without the GPU access provided to me by Rutgers University's Department of Computer Science.
-
-## References
-1.  A. Alzahrani, P. Shamsi, C. Dagli, and M. Ferdowsi, “Solar Irradiance Forecasting 		Using Deep Neural Networks,” ​Procedia Computer Science​, vol. 114, pp. 304–313, 2017, doi:​ ​10.1016/j.procs.2017.09.045​.
+* The inspiration behind this project comes from  [*Alzahrani et al.*](https://www.sciencedirect.com/science/article/pii/S1877050917318392) who provided an initial RNN structure for me to get started.

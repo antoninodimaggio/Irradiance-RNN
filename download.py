@@ -1,3 +1,4 @@
+import argparse
 import json
 import numpy as np
 import pandas as pd
@@ -5,7 +6,7 @@ import pandas as pd
 
 def download_data(lat, lon, year, leap_year, interval, attributes='ghi',
                   utc='false', mailing_list='false'):
-    with open('config.json') as json_file:
+    with open('./config/config.json') as json_file:
         data = json.load(json_file)
     api_key = data['API_KEY']
     your_name = data['YOUR_NAME']
@@ -27,16 +28,34 @@ def download_data(lat, lon, year, leap_year, interval, attributes='ghi',
               format= '%Y-%m-%d %H:%M'))
     df.drop(['Year', 'Month', 'Day', 'Hour', 'Minute'], axis=1, inplace=True)
     df = df[df.loc[:, 'GHI'] > 0]
-    csv_path = '../../data/' + str(lat) + '_' + str(lon) + '_' + str(year) + '.csv'
-    print('Saving csv to the path: ' + csv_path)
+    csv_path = f'./data/csv/{lat}_{lon}_{year}.csv'
+    print(f'Saving csv to the path: {csv_path}')
     df.to_csv(csv_path, index=False)
     print('Done downloading!')
 
 
+def main():
+    parser = argparse.ArgumentParser(description='Download data from NSRDB')
+    parser.add_argument('--lat', type=float,
+        help='Latitude (to avoid errors make sure this value is within the continental United States)',
+        required=True)
+    parser.add_argument('--lon', type=float,
+        help='Longitude (to avoid errors make sure this value is within the continental United States)',
+        required=True)
+    parser.add_argument('--year', type=int, help='Year (1998-2017 according to the official NSRDB docs)', required=True)
+    parser.add_argument('--leap-year', type=str, default='false',
+        help='Is it a leap year, make sure the string is either true or false (default: false)')
+    parser.add_argument('--interval', type=str, default='30', help='30 or 60 minute interval data (default: 30)')
+
+    args = parser.parse_args()
+
+    if (args.leap_year != 'false') and (args.leap_year != 'true'):
+        # --leap-year not specified correctly
+        parser.print_help()
+        raise ValueError('--leap-year should either be true or false make sure everything is lowercase')
+
+    download_data(args.lat, args.lon, args.year, args.leap_year, args.interval)
+
+
 if __name__ == '__main__':
-    ########################### THINGS YOU CAN EDIT ############################
-    lat, lon, year = 33.2164, -97.1292, 2011
-    leap_year = 'false'
-    interval = '30'
-    ############################################################################
-    download_data(lat, lon, year, leap_year, interval)
+    main()
