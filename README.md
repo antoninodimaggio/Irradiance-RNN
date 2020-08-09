@@ -30,8 +30,8 @@ The RNN is implemented using [PyTorch](https://pytorch.org/). The solar irradian
 * Python 3.6 +
 * CUDA 10.2 ([Instructions](https://pytorch.org/get-started/locally/) for installing PyTorch on 9.2 or 10.1)
 * Get an API key from [NREL](https://developer.nrel.gov/signup/)
-* Add your API access details to `Irradiance-RNN/config/config.example.json`
-* Remove `.example` from `Irradiance-RNN/config/config.example.json`
+* Add your API access details to `/Irradiance-RNN/config/config.example.json`
+* Remove `.example` from `/Irradiance-RNN/config/config.example.json`
 ```
 git clone https://github.com/antoninodimaggio/Irradiance-RNN.git
 cd Irradiance-RNN
