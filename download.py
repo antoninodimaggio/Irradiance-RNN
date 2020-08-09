@@ -13,7 +13,7 @@ def download_data(lat, lon, year, leap_year, interval, attributes='ghi',
     your_affiliation = data['YOUR_AFFILIATION']
     reason_for_use = data['REASON_FOR_USE']
     your_email = data['YOUR_EMAIL']
-    url_frmt_str = ('http://developer.nrel.gov/api/solar/nsrdb_psm3_download.csv'
+    url_frmt_str = ('https://developer.nrel.gov/api/solar/nsrdb_psm3_download.csv'
                     '?wkt=POINT({lon}%20{lat})&names={year}&leap_day={leap}&interval'
                     '={interval}&utc={utc}&full_name={name}&email={email}&affiliation'
                     '={affiliation}&mailing_list={mailing_list}&reason={reason}'
