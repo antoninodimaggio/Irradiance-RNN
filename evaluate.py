@@ -1,10 +1,15 @@
 import argparse
 
-from irradiance_rnn.train import train
+from irradiance_rnn.evaluate import evaluate
+from irradiance_rnn.plot import pretty_plot
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Train a configurable RNN')
+    # long lines
+    parser = argparse.ArgumentParser(
+        description=
+        'Evaluate and plot the irradiance forecast results of a trained model'
+    )
     parser.add_argument(
         '--lat', type=float, required=True, help='Latitude [Required]'
     )
@@ -12,11 +17,11 @@ def main():
         '--lon', type=float, required=True, help='Longitude [Required]'
     )
     parser.add_argument(
-        '--train-years',
+        '--test-years',
         type=str,
         required=True,
         help=
-        'Comma seperated value string of downloaded irradaince data [Required]'
+        'Comma seperated value string of downloaded irradaince data [Required]',
     )
     parser.add_argument(
         '--seq-length',
@@ -24,12 +29,6 @@ def main():
         default=64,
         help=
         'How many data points are needed to make one prediction [default: 64]'
-    )
-    parser.add_argument(
-        '--batch-size',
-        type=int,
-        default=64,
-        help='Batch size of the training data [default: 64]'
     )
     parser.add_argument(
         '--model-name',
@@ -62,41 +61,15 @@ def main():
         help='How many LSTM layers [default: 2]'
     )
     parser.add_argument(
-        '--dropout',
-        type=float,
-        default=0.3,
-        help='Dropout rate [default: 0.3]'
-    )
-    parser.add_argument(
-        '--epochs', type=int, default=5, help='Number of epochs [default: 5]'
-    )
-    parser.add_argument(
-        '--lr',
-        type=float,
-        default=1e-2,
-        help='Beginning learning rate [default: 1e-2]'
-    )
-    parser.add_argument(
-        '--decay',
-        type=float,
-        default=1e-5,
-        help='Weight decay also known as L2 penalty [default: 1e-5]'
-    )
-    parser.add_argument(
-        '--step-size',
-        type=int,
-        default=2,
-        help=
-        'Decays the learning rate of each parameter group by gamma every step_size epochs [default: 2]'
-    )
-    parser.add_argument(
-        '--gamma',
-        type=float,
-        default=0.5,
-        help='Multiplicative factor of learning rate decay [default: 0.5]'
+        '--plot',
+        action='store_true',
+        default=False,
+        help='Should we plot the data [default: False]'
     )
     args = vars(parser.parse_args())
-    train(**args)
+    dates, predicted, actual, rmse = evaluate(**args)
+    if args['plot']:
+        pretty_plot(dates, predicted, actual, round(rmse, 2))
 
 
 if __name__ == '__main__':
