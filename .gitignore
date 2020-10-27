@@ -8,5 +8,5 @@ __pycache__/
 
 # project
 *.csv
-*.json
-!config.example.json
+*.pt
+*config.json
